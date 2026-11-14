@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn Thi Sát Hạch CNTT - Phần 9 (Câu 238-270)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        h1 {
+            text-align: center;
+            color: #0d6efd;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            font-size: 22px;
+        }
+        .question-block {
+            background: #fafafa;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #0d6efd;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option-label:hover {
+            background: #f1f7ff;
+            border-color: #0d6efd;
+        }
+        .option-label input {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .btn {
+            flex: 1;
+            padding: 15px;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-transform: uppercase;
+        }
+        .btn-submit { background: #0d6efd; }
+        .btn-submit:hover { background: #0b5ed7; }
+        
+        .btn-retry-failed { 
+            background: #dc3545; 
+            display: none; 
+        }
+        .btn-retry-failed:hover { background: #bb2d3b; }
+
+        .result-box {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #e2e3e5;
+            border: 2px solid #6c757d;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #383d41;
+        }
+        .correct-answer {
+            background: #d1e7dd !important;
+            border-color: #198754 !important;
+            font-weight: bold;
+            color: #0f5132;
+        }
+        .wrong-answer {
+            background: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #842029;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>BỘ CÂU HỎI ÔN THI SÁT HẠCH CNTT (CÂU 238 - 270)</h1>
+    <div id="quiz"></div>
+    
+    <div id="result" class="result-box"></div>
+
+    <div class="action-buttons">
+        <button class="btn btn-submit" id="submit-btn" onclick="checkAnswers()">Nộp bài & Xem kết quả</button>
+        <button class="btn btn-retry-failed" id="retry-btn" onclick="filterWrongQuestions()">Làm lại các câu sai</button>
+    </div>
+</div>
+
+<script>
+const quizData = [
+    {
+        q: "Một người sử dụng phiên bản mới của phần mềm trong quá trình phát triển để tìm lỗi là?",
+        a: ["Thử nghiệm bản beta", "Chuột bạch", "Tiện ích miễn phí", "Newbe"],
+        correct: 0
+    },
+    {
+        q: "Trong MS Word, muốn tìm kiếm và thay thế một chuỗi văn bản, ta chọn lệnh:",
+        a: ["Nhấn tổ hợp phím Ctrl + G", "Replace", "Find", "Nhấn tổ hợp phím Ctrl + F"],
+        correct: 1
+    },
+    {
+        q: "Loại máy tính nào được sử dụng làm máy chủ của một trang Web?",
+        a: ["Máy khách", "Modem", "PDA", "Máy chủ"],
+        correct: 3
+    },
+    {
+        q: "Microsoft PowerPoint trong bộ Microsoft Office là:",
+        a: ["Là công cụ tạo Video Clip", "Là công cụ để xử lý văn bản", "Là công cụ dùng để xử lý môi trường tích hợp hình ảnh, âm thanh, ... và trình diễn.", "Là công cụ xử lý cơ sở dữ liệu và biểu diễn"],
+        correct: 2
+    },
+    {
+        q: "Trong MS Word, để đánh số thứ tự trang vào từng trang văn bản, ta thực hiện:",
+        a: ["Nhóm lệnh Review; Page Number", "Nhóm lệnh Page Layout; Page Number", "Nhóm lệnh Insert; Page Number", "Nhóm lệnh Format; Page Setup"],
+        correct: 2
+    },
+    {
+        q: "Dịch vụ nào cho phép người dùng truy cập các Web site bằng cách sử dụng tên miền thay vì địa chỉ IP?",
+        a: ["DSL", "DNS", "DHCP", "APIPA"],
+        correct: 1
+    },
+    {
+        q: "Hoạt động làm việc nào tăng nguy cơ chấn thương tay và bàn tay",
+        a: ["Theo dõi các điểm sáng nhấp nháy hoặc chuyển động nhanh trên màn hình", "Sử dụng liên tục các chất kích thích hóa học", "Làm việc ở tư thế không điểm tựa, bất tiện hoặc ví trí không cố định", "Thường xuyên duỗi hoặc uốn tay chân sau khi làm việc nặng"],
+        correct: 2
+    },
+    {
+        q: "Hàm OR là hàm thuộc lớp",
+        a: ["Hàm tìm kiếm", "Hàm về chuỗi", "Hàm về số", "Hàm luận lý"],
+        correct: 3
+    },
+    {
+        q: "Trong MS Word, để chèn mục Autotext vào văn bản, sau khi nhập tên viết tắt, ta nhấn phím:",
+        a: ["Phím F3", "Phím F2", "Phím F4", "Spacebar"],
+        correct: 0
+    },
+    {
+        q: "Trong MS Word, muốn mở một văn bản đã có sẵn trên đĩa, ta chọn:",
+        a: ["File; Open", "Design; Open", "Insert; File", "File; Import"],
+        correct: 0
+    },
+    {
+        q: "Dữ liệu lưu trữ ở đâu sẽ không bị mất khi tắt máy hay cúp điện ?",
+        a: ["ROM và RAM", "Thanh ghi", "ROM", "RAM"],
+        correct: 2
+    },
+    {
+        q: "Các số “168.191.11” là 1 ví dụ của..........",
+        a: ["bộ nhớ đệm", "địa chỉ ip", "chứng đối số", "cooki"],
+        correct: 1
+    },
+    {
+        q: "Trong MS Word, định dạng indent nào sau đây có dạng tất cả các dòng trong đoạn thụt vào so với lề phải của trang:",
+        a: ["Hanging indent", "First line indent", "Right indent", "Left indent"],
+        correct: 2
+    },
+    {
+        q: "Trong PowerPoint để sử dụng những Slide đã định sẵn ta thực hiện:",
+        a: ["Photo album.", "From AutoContent wizard.", "From Existing Presentation.", "From Design Template."],
+        correct: 3
+    },
+    {
+        q: "Đơn vị nào được sử dụng để đo tốc độ của bộ vi xử lý máy tính?",
+        a: ["Megahertz", "Kbit/s", "Megabyte", "Số vòng/ phút"],
+        correct: 0
+    },
+    {
+        q: "Muốn gõ được tiếng Việt trong Windows bắt buộc phải dùng phần mềm:",
+        a: ["Tùy theo yêu cầu người sử dụng", "Vietware", "Unikey 3.5", "Vietkey 2000"],
+        correct: 0
+    },
+    {
+        q: "Muốn xóa một thư mục/ tập tin trong Windows, ta R_Click lên thư mục/ tập tin cần xóa và chọn:",
+        a: ["Delete", "Remove", "Cut", "Rename"],
+        correct: 0
+    },
+    {
+        q: "Điều nào sau đây là không một thiết bị đầu vào phổ biến?",
+        a: ["Tổng hợp giọng nói", "Microphone", "Chuột", "Bàn phím"],
+        correct: 0
+    },
+    {
+        q: "Trong MS Word, muốn tạo tự động các ký hiệu (hoa thị) ở đầu mỗi đoạn, ta chọn chức năng:",
+        a: ["Bullets", "Numbering", "Numbering and Bullets", "Symbol"],
+        correct: 0
+    },
+    {
+        q: "Để gõ được tiếng việt với Font chữ: VNI-Times, ta sẽ chọn bảng mã thích hợp nào sau đây:",
+        a: ["TCVN3.", "Vietware_X.", "VNI Windows.", "Unicode."],
+        correct: 2
+    },
+    {
+        q: "Trong MS Word, sử dụng tổ hợp phím nào sau đây để bật / tắt chế độ viết chỉ số dưới:",
+        a: ["Alt + Shift + =", "Alt + =", "Ctrl + =", "Ctrl + Shift + ="],
+        correct: 2
+    },
+    {
+        q: "Cho biết kết quả của công thức sau đây: =OR(14>=0, 32>=43 ,48>=6)",
+        a: ["FALSE", "0", "5", "TRUE"],
+        correct: 3
+    },
+    {
+        q: "Trong MS PowerPoint, đang trình chiếu một bài trình diễn, muốn dừng trình chiếu ta nhấn phím:",
+        a: ["Phím Esc.", "Phím Tab.", "Phím End.", "Phím Home ."],
+        correct: 0
+    },
+    {
+        q: "Trong Windows, biểu tượng của thư mục thường có màu gì ?",
+        a: ["Đen", "Vàng", "Đỏ", "Nâu"],
+        correct: 1
+    },
+    {
+        q: "Trong MS Word, chế độ nào trong các chế độ sau dùng để soạn thảo văn bản:",
+        a: ["Web Layout", "Print Layout", "Write Layout", "Outline"],
+        correct: 1
+    },
+    {
+        q: "Trong soạn thảo Word, muốn chuyển đổi giữa chế độ gõ chèn và chế độ gõ đè ta nhấn phím:",
+        a: ["Break", "Delete", "Insert", "Tab"],
+        correct: 2
+    },
+    {
+        q: "Trong MS PowerPoint, tại một slide ta dùng tổ hợp phím nào sau đây sẽ xoá slide đó?",
+        a: ["Ctrl + Delete.", "ALT + Delete.", "ALT + Shift + Delete.", "Shift + Delete."],
+        correct: 3
+    },
+    {
+        q: "Trong MS Word, chức năng tổ hợp Ctrl + X dùng để:",
+        a: ["Xoá 1 khối văn bản đã được đánh dấu", "Xoá 1 khối văn bản đã được đánh dấu và chép vào bộ nhớ đệm (Clipboard)", "Dán 1 khối văn bản trong bộ nhớ đệm (Clipboard) vào vị trí hiện hành của con trỏ", "Chép khối văn bản đã được đánh dấu vào trong bộ nhớ đệm (Clipboard)"],
+        correct: 1
+    },
+    {
+        q: "Khi đang làm việc với Windows, muốn xóa tất cả các dữ liệu trong thùng rác, ta chọn chức năng:",
+        a: ["Erase Recycle Bin", "Delete all items", "Restore all items", "Empty Recycle Bin"],
+        correct: 3
+    },
+    {
+        q: "Loại tập tin nào thường được ẩn:",
+        a: ["Tập tin Tải về", "Tập tin Hệ thống", "Tập tin Tài liệu", "Tập tin Nén"],
+        correct: 1
+    },
+    {
+        q: "Trong MS Word, giả sử tài liệu có 3 đoạn văn bản (Paragraph), hỏi trong mỗi đoạn văn bản có thể tạo được nhiều nhất bao nhiêu chữ DROP CAP:",
+        a: ["2", "1", "3", "Tùy ý"],
+        correct: 1
+    },
+    {
+        q: "Thiết bị nào sau đây được gọi là thiết bị xuất chuẩn:",
+        a: ["Máy Projector", "Máy Scan", "Máy in", "Màn hình"],
+        correct: 3
+    },
+    {
+        q: "Trong MS Word, thao tác nào dưới đây dùng để sao chép một đoạn văn bản vào bộ nhớ đệm (Clipboard):",
+        a: ["Đánh dấu khối văn bản nhấn tổ hợp phím CTRL + V", "Đánh dấu khối văn bản rồi gõ COPY", "Đánh dấu khối văn bản nhấn tổ hợp phím CTRL + C", "Đánh dấu khối văn bản nhấn tổ hợp phím CTRL + Z"],
+        correct: 2
+    }
+];
+
+let shuffledQuizData = [];
+let wrongQuestionIndexes = [];
+
+function prepareQuizData() {
+    shuffledQuizData = quizData.map((item) => {
+        let optionsWithMeta = item.a.map((optionText, index) => {
+            return { text: optionText, isCorrect: index === item.correct };
+        });
+
+        for (let i = optionsWithMeta.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [optionsWithMeta[i], optionsWithMeta[j]] = [optionsWithMeta[j], optionsWithMeta[i]];
+        }
+
+        let newCorrectIndex = optionsWithMeta.findIndex(opt => opt.isCorrect);
+
+        return {
+            q: item.q,
+            a: optionsWithMeta.map(opt => opt.text),
+            correct: newCorrectIndex
+        };
+    });
+}
+
+function loadQuiz() {
+    const quizContainer = document.getElementById('quiz');
+    let output = '';
+
+    shuffledQuizData.forEach((item, qIndex) => {
+        const questionNumber = qIndex + 238; 
+        output += `
+            <div class="question-block" id="q-block-${qIndex}">
+                <div class="question-text">Câu ${questionNumber}: ${item.q}</div>
+                <div class="options">
+        `;
+        
+        item.a.forEach((option, oIndex) => {
+            const prefix = String.fromCharCode(97 + oIndex); 
+            output += `
+                <label class="option-label" id="label-${qIndex}-${oIndex}">
+                    <input type="radio" name="question${qIndex}" value="${oIndex}">
+                    ${prefix}. ${option}
+                </label>
+            `;
+        });
+
+        output += `
+                </div>
+            </div>
+        `;
+    });
+
+    quizContainer.innerHTML = output;
+}
+
+function checkAnswers() {
+    let score = 0;
+    wrongQuestionIndexes = []; 
+
+    shuffledQuizData.forEach((item, qIndex) => {
+        const block = document.getElementById(`q-block-${qIndex}`);
+        if (block.style.display === 'none') return; 
+
+        const selected = document.querySelector(`input[name="question${qIndex}"]:checked`);
+        
+        item.a.forEach((_, oIndex) => {
+            document.getElementById(`label-${qIndex}-${oIndex}`).classList.remove('correct-answer', 'wrong-answer');
+        });
+
+        document.getElementById(`label-${qIndex}-${item.correct}`).classList.add('correct-answer');
+
+        if (selected) {
+            const answerIndex = parseInt(selected.value);
+            if (answerIndex === item.correct) {
+                score++;
+            } else {
+                document.getElementById(`label-${qIndex}-${answerIndex}`).classList.add('wrong-answer');
+                wrongQuestionIndexes.push(qIndex);
+            }
+        } else {
+            wrongQuestionIndexes.push(qIndex);
+        }
+    });
+
+    const totalQuestionsInTurn = shuffledQuizData.length - (shuffledQuizData.length - document.querySelectorAll('.question-block:not([style*="display: none"])').length);
+    const resultBox = document.getElementById('result');
+    resultBox.style.display = 'block';
+    resultBox.innerHTML = `Kết quả lượt này: Đúng ${score}/${totalQuestionsInTurn} câu!`;
+
+    const retryBtn = document.getElementById('retry-btn');
+    if (wrongQuestionIndexes.length > 0) {
+        retryBtn.style.display = 'block';
+    } else {
+        retryBtn.style.display = 'none';
+        resultBox.innerHTML += " 🎉 Tuyệt vời! Bạn đã hoàn thành chính xác tất cả các câu hỏi!";
+    }
+    
+    resultBox.scrollIntoView({ behavior: 'smooth' });
+}
+
+function filterWrongQuestions() {
+    shuffledQuizData.forEach((item, qIndex) => {
+        const block = document.getElementById(`q-block-${qIndex}`);
+        
+        if (wrongQuestionIndexes.includes(qIndex)) {
+            block.style.display = 'block';
+
+            let currentOptions = item.a.map((text, idx) => {
+                return { text: text, isCorrect: idx === item.correct };
+            });
+            for (let i = currentOptions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [currentOptions[i], currentOptions[j]] = [currentOptions[j], currentOptions[i]];
+            }
+            item.a = currentOptions.map(o => o.text);
+            item.correct = currentOptions.findIndex(o => o.isCorrect);
+
+            const optionsContainer = block.querySelector('.options');
+            let optionsHTML = '';
+            item.a.forEach((option, oIndex) => {
+                const prefix = String.fromCharCode(97 + oIndex);
+                optionsHTML += `
+                    <label class="option-label" id="label-${qIndex}-${oIndex}">
+                        <input type="radio" name="question${qIndex}" value="${oIndex}">
+                        ${prefix}. ${option}
+                    </label>
+                `;
+            });
+            optionsContainer.innerHTML = optionsHTML;
+
+        } else {
+            block.style.display = 'none';
+        }
+    });
+
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('retry-btn').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+prepareQuizData();
+loadQuiz();
+</script>
+
+</body>
+</html>
